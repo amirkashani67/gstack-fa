@@ -1,64 +1,91 @@
-# gstack — نسخه فارسی
+# gstack
 
-ترجمه و ویراستاری فارسی README پروژه gstack، با حفظ نام فرمان‌ها، کدها، مسیرها و اصطلاحات فنی.
+> ترجمه فارسی README پروژه gstack، بر پایه نسخه اصلی پروژه در [garrytan/gstack](https://github.com/garrytan/gstack). نام فرمان‌ها، کدها، مسیرها، متغیرهای محیطی و شناسه‌های فنی عمداً ترجمه نشده‌اند.
 
-> gstack یک لایه Workflow متن‌باز برای Claude Code است که یک Agent عمومی را به تیمی از نقش‌های تخصصی تبدیل می‌کند: برنامه‌ریزی محصول، معماری، طراحی، بازبینی کد، QA، امنیت و انتشار.
+## معرفی
 
-## درباره gstack
+gstack ابزارهای Markdown و slash-commandهای Garry Tan برای تبدیل Claude Code به یک تیم مهندسی مجازی است: نقش‌هایی برای بازاندیشی محصول، معماری، طراحی، بازبینی کد، QA، امنیت و انتشار. پروژه رایگان و تحت مجوز MIT است.
 
-gstack پاسخ Garry Tan به شیوه جدید توسعه نرم‌افزار با Agentهای هوش مصنوعی است. ایده اصلی پروژه این است که به‌جای یک Prompt عمومی، برای هر مرحله از چرخه توسعه یک نقش و Workflow مشخص داشته باشیم.
+نویسنده توضیح می‌دهد که در ۶۰ روز اخیر ۳ سرویس Production و بیش از ۴۰ قابلیت منتشر کرده و نرخ سالانه ۲۰۲۶ او، بر اساس تغییر منطقی کد، حدود ۸۱۰ برابر سرعت سال ۲۰۱۳ بوده است (۱۱٬۴۱۷ در برابر ۱۴ خط منطقی در روز). این اندازه‌گیری روی ۴۰ مخزن عمومی و خصوصی `garrytan/*` انجام شده است.
 
-gstack رایگان و دارای مجوز MIT است و از Markdown و فرمان‌های Slash استفاده می‌کند.
-
-**برای چه کسانی؟**
-- بنیان‌گذاران و مدیران عامل، به‌ویژه افراد فنی
+**مخاطبان اصلی:**
+- بنیان‌گذاران و مدیران عامل، به‌خصوص افراد فنی
 - کاربران تازه‌کار Claude Code
 - Tech Leadها و Staff Engineerها
 
 ## شروع سریع
 
 1. gstack را نصب کنید.
-2. `/office-hours` را برای توضیح ایده اجرا کنید.
-3. `/plan-ceo-review` را برای بازبینی محصول اجرا کنید.
+2. `/office-hours` را برای توضیح چیزی که می‌سازید اجرا کنید.
+3. `/plan-ceo-review` را روی ایده قابلیت اجرا کنید.
 4. `/review` را روی Branch دارای تغییر اجرا کنید.
 5. `/qa` را روی URL محیط Staging اجرا کنید.
+6. اگر همین‌جا متوقف شوید، خیلی سریع متوجه می‌شوید این Workflow برای شما مناسب است یا نه.
 
 ## نصب
 
-پیش‌نیازهای اصلی: Claude Code، Git، Bun نسخه 1.0 یا بالاتر و Node.js در Windows.
+**پیش‌نیازها:** Claude Code، Git، Bun v1.0+ و Node.js (فقط Windows).
 
-در macOS، استفاده از Aside پیشنهاد شده است. اگر Aside در دسترس نباشد، gstack از Browser داخلی خود استفاده می‌کند.
+در macOS، [Aside](https://aside.com) (macOS 15+) به‌عنوان Browser توصیه شده است. Skillهای Browser، `/make-pdf` و `/diagram` ابتدا از Aside استفاده می‌کنند و Sessionهای Loginشده واقعی را حفظ می‌کنند؛ در نبود آن، `./setup` Browser داخلی gstack را می‌سازد.
 
-نصب پایه:
+`/cso` علاوه بر این به Bun دارای چهار Build Flag از نوع `--no-compile-autoload-*` و Toolchain بومی نیاز دارد: C Compiler با قابلیت Static در Linux، Xcode Command Line Tools در macOS یا Visual Studio 2022 Build Tools با Desktop development with C++ در Windows. در صورت نبود پیش‌نیازها، setup بقیه موارد را نصب می‌کند و `/cso` وضعیت `not assessed` را گزارش می‌دهد.
 
-    git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
-    cd ~/.claude/skills/gstack
-    ./setup
+برای Registryهای کندتر می‌توانید `GSTACK_CSO_IMAGE_PULL_TIMEOUT_SECONDS=120` را تنظیم کنید؛ محدوده مجاز ۵ تا ۳۰۰ ثانیه است. Preload کامل حداکثر یک ساعت زمان دارد.
 
-برای حالت تیمی:
+### گام ۱
 
-    cd ~/.claude/skills/gstack && ./setup --team
-    ~/.claude/skills/gstack/bin/gstack-team-init required
+در Claude Code این را اجرا کنید:
 
-در صورت تمایل می‌توانید required را به optional تغییر دهید.
+```bash
+git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack
+cd ~/.claude/skills/gstack
+./setup
+```
+
+سپس بخش `gstack` را به CLAUDE.md اضافه کنید و برای Web Browsing استفاده از `/browse` را الزام کنید، ابزارهای `mcp__claude-in-chrome__*` را ممنوع کنید و Skillهای gstack را معرفی کنید.
+
+### گام ۲ — Team Mode
+
+```bash
+(cd ~/.claude/skills/gstack && ./setup --team) && ~/.claude/skills/gstack/bin/gstack-team-init required && git add .claude/ CLAUDE.md && git commit -m "require gstack for AI-assisted work"
+```
+
+Team Mode فایل Vendored وارد Repo نمی‌کند و هر Claude Code Session یک Auto-update Check سریع دارد. برای حالت غیرالزامی، `required` را به `optional` تغییر دهید.
 
 ## OpenClaw
 
-OpenClaw می‌تواند Sessionهای Claude Code را از طریق ACP اجرا کند و از Skillهای gstack استفاده کند.
+OpenClaw Sessionهای Claude Code را از طریق ACP ایجاد می‌کند. پس از نصب gstack می‌توانید در AGENTS.md مشخص کنید که Sessionهای Claude Code از Skillهای gstack استفاده کنند.
 
-نمونه کاربردها:
-- ممیزی امنیتی: `/cso`
-- بازبینی کد: `/review`
-- تست یک URL: `/qa https://...`
-- ساخت یک قابلیت از ابتدا تا انتشار: `/autoplan` سپس پیاده‌سازی و `/ship`
+نمونه‌ها:
+- ممیزی امنیتی: `Run /cso`
+- Code Review: `Run /review`
+- QA روی URL: `Run /qa https://...`
+- ساخت کامل قابلیت: `Run /autoplan` → پیاده‌سازی → `/ship`
+- برنامه‌ریزی: `Run /office-hours` → `/autoplan`
 
-Skillهای بومی OpenClaw:
+راهنمای کامل: [docs/OPENCLAW.md](docs/OPENCLAW.md)
 
-    clawhub install gstack-openclaw-office-hours gstack-openclaw-ceo-review gstack-openclaw-investigate gstack-openclaw-retro
+Skillهای Native OpenClaw:
 
-## سایر Agentها
+```
+clawhub install gstack-openclaw-office-hours gstack-openclaw-ceo-review gstack-openclaw-investigate gstack-openclaw-retro
+```
 
-gstack فقط برای Claude نیست و می‌تواند برای Hostهای مختلف نصب شود:
+| Skill | کاربرد |
+|---|---|
+| `gstack-openclaw-office-hours` | Product interrogation با ۶ سؤال اجباری |
+| `gstack-openclaw-ceo-review` | Strategic challenge با ۴ حالت Scope |
+| `gstack-openclaw-investigate` | روش Debug علت ریشه‌ای |
+| `gstack-openclaw-retro` | Retrospective هفتگی مهندسی |
+
+## سایر AI Agentها
+
+gstack برای ۱۰ AI Coding Agent طراحی شده و Setup آن‌ها را تشخیص می‌دهد:
+
+```bash
+git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/gstack
+cd ~/gstack && ./setup
+```
 
 | Agent | Flag |
 |---|---|
@@ -70,197 +97,265 @@ gstack فقط برای Claude نیست و می‌تواند برای Hostهای 
 | Slate | `--host slate` |
 | OpenClaw | `--host openclaw` |
 | Hermes | `--host hermes` |
-| GBrain | `--host gbrain` |
+| GBrain (mod) | `--host gbrain` |
+
+Reviewهای خارجی به CLI نصب‌شده و Authenticateشده نیاز دارند. فرمان‌های خارجی `/gstack-claude-code` و `/gstack-codex` هستند. `/claude` به `/claude-code` تغییر نام داده است.
+
+برای Agentهایی مانند Zed، Amp و Jules که فقط Rules را می‌خوانند، Digest موجود در [agents-digest/gstack-AGENTS.md](agents-digest/gstack-AGENTS.md) را Copy کنید.
+
+## مثال Workflow
+
+```
+You:    I want to build a daily briefing app for my calendar.
+You:    /office-hours
+Claude: [asks about the pain — specific examples, not hypotheticals]
+
+You:    Multiple Google calendars, events with stale info, wrong locations.
+        Prep takes forever and the results aren't good enough...
+
+Claude: [بازتعریف مسئله، استخراج قابلیت‌ها، چالش فرض‌ها و تولید گزینه‌های پیاده‌سازی]
+
+You:    /plan-ceo-review
+        [بازبینی Scope و Design Doc]
+
+You:    /plan-eng-review
+        [Data Flow، State Machine، Error Path، Test Matrix و Security]
+
+You:    /review
+        [AUTO-FIXED] 2 issues. [ASK] Race condition → you approve fix.
+
+You:    /qa https://staging.myapp.com
+        [opens real browser, clicks through flows, finds and fixes a bug]
+
+You:    /ship
+        Tests: 42 → 51 (+9 new). PR: github.com/you/app/pull/42
+```
 
 ## چرخه Sprint
 
-gstack یک فرایند است، نه مجموعه‌ای از ابزارهای جدا:
+**Think → Plan → Build → Review → Test → Ship → Reflect**
 
-**فکر کردن → برنامه‌ریزی → ساخت → بازبینی → تست → انتشار → بازنگری**
+هر Skill خروجی مورد نیاز مرحله بعد را فراهم می‌کند.
 
-هر مرحله خروجی مرحله بعد را تغذیه می‌کند.
-
-| Skill | نقش | کاربرد |
+| Skill | متخصص | کاربرد |
 |---|---|---|
-| `/office-hours` | YC Office Hours | بازتعریف مسئله و ایجاد سند طراحی |
-| `/plan-ceo-review` | CEO / Founder | بازنگری محصول و Scope |
-| `/plan-eng-review` | Eng Manager | معماری، جریان داده، Edge Case و تست |
-| `/plan-design-review` | Senior Designer | بازبینی طراحی و تشخیص AI Slop |
-| `/plan-devex-review` | DX Lead | بررسی تجربه توسعه‌دهنده |
-| `/design-consultation` | Design Partner | ساخت Design System و Mockup |
-| `/review` | Staff Engineer | یافتن باگ‌های Production |
-| `/investigate` | Debugger | یافتن علت ریشه‌ای خطا |
+| `/office-hours` | YC Office Hours | شش سؤال اجباری برای بازتعریف محصول قبل از کدنویسی |
+| `/plan-ceo-review` | CEO / Founder | بازاندیشی مسئله و چهار حالت Scope |
+| `/plan-eng-review` | Eng Manager | معماری، Data Flow، Diagram، Edge Case و Test |
+| `/plan-design-review` | Senior Designer | امتیازدهی ۰–۱۰ به ابعاد طراحی و تشخیص AI Slop |
+| `/plan-devex-review` | Developer Experience Lead | DX Review، TTHW و حالت‌های DX EXPANSION / POLISH / TRIAGE |
+| `/design-consultation` | Design Partner | Design System، تحقیق و Mockup و تولید `DESIGN.md` |
+| `/review` | Staff Engineer | Bugهای Production و Completeness Gap |
+| `/investigate` | Debugger | Root-cause Debugging؛ بدون Investigation هیچ Fixی |
 | `/design-review` | Designer Who Codes | Audit و اصلاح طراحی |
-| `/devex-review` | DX Tester | تست تجربه واقعی Developer |
-| `/design-shotgun` | Design Explorer | تولید و مقایسه Variantهای طراحی |
-| `/design-html` | Design Engineer | تبدیل Mockup به HTML/CSS آماده انتشار |
-| `/qa` | QA Lead | تست، اصلاح و Regression Test |
+| `/devex-review` | DX Tester | Audit زنده Onboarding و تجربه Developer |
+| `/design-shotgun` | Design Explorer | تولید ۴–۶ Mockup Variant و Comparison Board |
+| `/design-html` | Design Engineer | تبدیل Mockup به HTML/CSS Production با Pretext |
+| `/qa` | QA Lead | Test، Fix، Verify و Regression Test |
 | `/qa-only` | QA Reporter | گزارش QA بدون تغییر کد |
-| `/pair-agent` | Multi-Agent Coordinator | هماهنگی Agentهای مختلف از طریق Browser |
-| `/cso` | Chief Security Officer | ممیزی امنیتی |
-| `/ship` | Release Engineer | تست، Coverage، Push و ایجاد PR |
-| `/land-and-deploy` | Release Engineer | Merge، Deploy و بررسی Production |
-| `/canary` | SRE | پایش پس از Deploy |
-| `/benchmark` | Performance Engineer | بررسی Performance و Core Web Vitals |
-| `/document-release` | Technical Writer | به‌روزرسانی مستندات |
-| `/document-generate` | Documentation Author | تولید مستندات جدید |
+| `/pair-agent` | Multi-Agent Coordinator | اشتراک Browser با Agentهای دیگر |
+| `/cso` | Chief Security Officer | Security Audit و در حالت جامع Runtime/Scanner محدودشده |
+| `/ship` | Release Engineer | Sync، Test، Coverage، Push و PR |
+| `/land-and-deploy` | Release Engineer | Merge، Deploy و Verify Production |
+| `/canary` | SRE | Post-deploy Monitoring |
+| `/benchmark` | Performance Engineer | Page Load، Core Web Vitals و Resource Size |
+| `/document-release` | Technical Writer | به‌روزرسانی Docs مطابق تغییرات |
+| `/document-generate` | Documentation Author | تولید Docs گمشده با Diataxis |
 | `/retro` | Eng Manager | Retrospective هفتگی |
-| `/browse` | QA Engineer | کنترل Browser و تعامل با وب |
-| `/scrape` | Data Extractor | استخراج داده از صفحات وب |
-| `/setup-browser-cookies` | Session Manager | واردکردن Cookieهای Browser واقعی |
-| `/autoplan` | Review Pipeline | اجرای خودکار CEO → Design → DX → Eng |
+| `/browse` | QA Engineer | Browser واقعی و Screenshot |
+| `/scrape` | Data Extractor | استخراج داده ساختاریافته از Web |
+| `/setup-browser-cookies` | Session Manager | Import Cookieهای Browser واقعی |
+| `/autoplan` | Review Pipeline | CEO → Design → DX → Eng |
+| `/spec` | Spec Author | تبدیل Intent مبهم به Spec اجرایی در پنج مرحله |
 | `/learn` | Memory | مدیریت یادگیری‌های پروژه |
-| `/make-pdf` | Publisher | تبدیل Markdown به سند PDF/HTML/DOCX |
-| `/diagram` | Diagram Maker | تولید Mermaid، Excalidraw و SVG/PNG |
+| `/make-pdf` | Publisher | Markdown به سند Publication-quality |
+| `/diagram` | Diagram Maker | Mermaid + Excalidraw + SVG/PNG |
 
-## ابزارهای قدرتمند
+### انتخاب Review
 
-- `/codex` — دریافت نظر دوم از OpenAI Codex
-- `/claude-code` — دریافت نظر دوم از Claude Code
-- `/careful` — هشدار پیش از فرمان‌های مخرب
-- `/freeze` — محدودکردن ویرایش به یک Directory
-- `/guard` — فعال‌سازی هم‌زمان Careful و Freeze
-- `/open-gstack-browser` — اجرای GStack Browser نمایان
-- `/setup-deploy` — تنظیمات اولیه Deploy
-- `/setup-gbrain` — راه‌اندازی GBrain
-- `/sync-gbrain` — همگام‌سازی کد با GBrain
-- `/gstack-upgrade` — ارتقای gstack
-- `/ios-qa` — QA روی iPhone واقعی
+| هدف | قبل از کد | بعد از انتشار |
+|---|---|---|
+| End users | `/plan-design-review` | `/design-review` |
+| Developers | `/plan-devex-review` | `/devex-review` |
+| Architecture | `/plan-eng-review` | `/review` |
+| همه موارد | `/autoplan` | — |
 
-## Browser و QA
+## Power Tools
 
-در macOS، gstack ابتدا از Aside استفاده می‌کند. این روش امکان استفاده از Sessionهای واقعی، Cookieها و Loginهای موجود را فراهم می‌کند.
+| Command | کاربرد |
+|---|---|
+| `/codex` | Second Opinion مستقل از OpenAI Codex CLI |
+| `/claude-code` | Second Opinion مستقل از Claude Code |
+| `/careful` | هشدار پیش از فرمان‌های مخرب |
+| `/freeze` | محدودکردن ویرایش به یک Directory |
+| `/guard` | `/careful` + `/freeze` |
+| `/unfreeze` | حذف مرز `/freeze` |
+| `/open-gstack-browser` | GStack Browser با Sidebar، Anti-bot Stealth و Auto Model Routing |
+| `/setup-deploy` | تنظیم Deploy |
+| `/setup-gbrain` | راه‌اندازی GBrain |
+| `/sync-gbrain` | Index مجدد Code و Refresh کردن Guidance |
+| `/gstack-upgrade` | Upgrade به آخرین نسخه |
+| `/ios-qa` | iOS Live-Device QA |
+| `/ios-fix`, `/ios-design-review`, `/ios-clean`, `/ios-sync` | ابزارهای چرخه QA و Debug iOS |
 
-اگر Aside وجود نداشته باشد، Browser داخلی gstack به‌صورت خودکار استفاده می‌شود.
+## Binaryهای مستقل
 
-`/open-gstack-browser` مرورگر GStack Browser را با Sidebar، قابلیت‌های ضد Bot و مسیریابی مدل اجرا می‌کند.
+- `gstack-model-benchmark` — Benchmark بین Claude، GPT/Codex و Gemini؛ مقایسه Latency، Token، Cost و در صورت درخواست LLM-judge.
+- `gstack-taste-update` — ذخیره Taste Profile برای انتخاب‌های `/design-shotgun`.
+- `gstack-egress` — ثبت و Verify کردن Egress Receiptهای Hash-chained در `~/.gstack/security/egress.jsonl`.
+- `gstack-context-bill` — Audit Offline هزینه Token Skills Tree؛ با `--diff`، `--budget` و `--exact`.
+- `gstack-code-intelligence` — Interface مشترک برای GBrain، Sourcebot و Graphify.
+- `gstack-verify-gate` — Stop Hook اختیاری برای الزام موفقیت Verify Command.
+- `gstack-memorable` — Bridge اختیاری به Memorable برای Claude Code.
+- `gstack-wtree` — Working-tree fingerprint.
+- `gstack-review-log` — Receiptهای Review Pass.
+- `gstack-review-read` — وضعیت Freshness یک Review: CURRENT / STALE / UNVERIFIED.
+- `gstack-evidence` — Ledger مربوط به Verification Evidence.
+- `gstack-issue-guard` — Trust Envelope برای متن Issue/PR.
+- `gstack-ios-qa-daemon` — Broker سمت Mac برای iPhone متصل.
+- `gstack-ios-qa-mint` — مدیریت Allowlist مربوط به iOS QA.
+- `gstack-ios-qa-regen` — بازتولید DebugBridge و Typed Accessorها.
 
-### دفاع در برابر Prompt Injection
+## CSO Evaluation و Hookها
 
-gstack هنگام خواندن صفحات وب از دفاع چندلایه استفاده می‌کند؛ از جمله Data Marking، حذف عناصر مخفی، پاک‌سازی ARIA، URL Blocklist و یک Classifier محلی برای تشخیص محتوای مشکوک.
+Producer خصوصی Paid برای CSO یک Packaging Contract است و شامل `cso-eval-producer`، `gstack-cso-launcher`، `gstack-cso-core`، `gstack-cso-watchdog` و Manifest مخفی `.gstack-cso-generation` می‌شود. نصب باید Root-owned و Nonwritable باشد و Receiptها Hash همه Artifactها را Bind می‌کنند.
 
-Kill Switch اضطراری:
+Setup یک Stop Hook پیش‌فرض به نام `gstack-timeline-stop` در `~/.claude/settings.json` ثبت می‌کند. برای Opt-out:
 
-    GSTACK_SECURITY_OFF=1
+```bash
+./setup --no-timeline-stop-hook
+```
 
-### Browser handoff
+یا:
 
-اگر Agent به CAPTCHA، MFA یا Auth Wall برسد:
+```bash
+GSTACK_TIMELINE_STOP_HOOK=no
+gstack-config set timeline_stop_hook no
+```
 
-    $B handoff
+برای پاک‌سازی Hookهای قدیمی:
 
-پس از حل مشکل توسط کاربر:
+```bash
+gstack-settings-hook prune-stale --repoint
+```
 
-    $B resume
+## Continuous Checkpoint Mode
+
+```bash
+gstack-config set checkpoint_mode continuous
+```
+
+در این حالت Commitهای `WIP:` با Body ساختاریافته `[gstack-context]` ایجاد می‌شوند. `/context-restore` وضعیت Session را بازسازی می‌کند و `/ship` پیش از PR آن‌ها را Squash می‌کند. Push فقط با `checkpoint_push=true` فعال است و پیش‌فرض Local-only است.
+
+## Domain Skills و Raw CDP
+
+`$B domain-skill save` یک Note Per-site ذخیره می‌کند؛ پس از ۳ استفاده موفق فعال می‌شود و با `$B domain-skill promote-to-global` قابل Promotion است.
+
+`$B cdp <Domain.method>` مسیر Raw برای Chrome DevTools Protocol است. Methodها باید با دلیل یک‌خطی در `browse/src/cdp-allowlist.ts` Allowlist شوند و خروجی Data-exfil در Envelope با برچسب UNTRUSTED قرار می‌گیرد.
+
+مرجع عمیق همه Skillها: [docs/skills.md](docs/skills.md)
+
+## چهار Failure Mode Karpathy
+
+gstack چهار Failure Mode را هدف می‌گیرد: فرض اشتباه، پیچیدگی بیش‌ازحد، تغییرات Orthogonal و Imperative به‌جای Declarative. `/office-hours` فرض‌ها را آشکار می‌کند، Confusion Protocol از حدس‌زدن در تصمیم‌های معماری جلوگیری می‌کند، `/review` پیچیدگی و Drive-by Edit را پیدا می‌کند و `/ship` کار را با Test-first به هدف قابل Verify تبدیل می‌کند.
+
+## Design، QA و Browser
+
+`/design-shotgun` چهار تا شش Variant با GPT Image می‌سازد، Comparison Board ایجاد می‌کند و Taste Memory را به کار می‌گیرد. `/design-html` با Pretext خروجی Production HTML/CSS می‌سازد؛ 30KB و بدون Dependency و با تشخیص React/Svelte/Vue.
+
+`/qa` می‌تواند تعداد Workerهای موازی را از ۶ به ۱۲ برساند. هر Fix یک Regression Test تولید می‌کند و `/ship` Coverage Audit می‌دهد.
+
+در Mac با Aside، `/qa`، `/qa-only`، `/design-review`، `/canary`، `/benchmark`، `/scrape` و `/browse` روی Browser واقعی و Sessionهای Loginشده اجرا می‌شوند. بدون Aside، Chromium داخلی gstack خودکار استفاده می‌شود.
+
+`/open-gstack-browser` GStack Browser را با Anti-bot Stealth و Sidebar اجرا می‌کند. Sonnet برای Action و Opus برای Analysis استفاده می‌شود و هر Sidebar Task تا ۵ دقیقه زمان دارد.
+
+### Prompt Injection Defense
+
+gstack روی هر Page Read از Content Filterهای Datamarking، Hidden-element stripping، ARIA scrubbing و URL Blocklist استفاده می‌کند و یک ML Classifier محلی 22MB را در Sidecar Subprocess اجرا می‌کند. Verdict Combiner برای Block نیازمند Agreement است. همه‌چیز محلی است.
+
+Kill Switch:
+
+```bash
+GSTACK_SECURITY_OFF=1
+```
+
+### Browser Handoff
+
+```bash
+$B handoff
+```
+
+پس از حل CAPTCHA/Auth/MFA:
+
+```bash
+$B resume
+```
 
 Agent از همان نقطه ادامه می‌دهد.
 
-## Sprintهای موازی
+### Pair Agent
 
-[Conductor](https://conductor.build) امکان اجرای چند Session Claude Code را در Workspaceهای جداگانه فراهم می‌کند. ساختار gstack کمک می‌کند هر Agent بداند چه کاری انجام دهد و چه زمانی متوقف شود.
+`/pair-agent` Claude Code را با OpenClaw، Hermes، Codex، Cursor و Agentهای دیگر هماهنگ می‌کند. هر Agent Tab خودش را دارد؛ Scoped Token، Tab Isolation، Rate Limiting و Activity Attribution فعال است و در صورت نصب ngrok، Remote Agent هم می‌تواند متصل شود.
 
-### ورودی صوتی
+### Multi-AI Second Opinion
 
-Skillها با عبارت‌های طبیعی مانند اجرای بررسی امنیتی، تست وب‌سایت یا بازبینی مهندسی قابل فعال‌سازی هستند و نیازی به حفظ نام همه فرمان‌ها نیست.
+در Codex، `/claude-code` Review را به Claude Code می‌فرستد و در Claude Code، `/codex` آن را به OpenAI Codex می‌فرستد. Review، Challenge و Consultation با Session Continuity پشتیبانی می‌شوند.
 
-## GBrain
+### Safety Guardrails
 
-[GBrain](https://github.com/garrytan/gbrain) یک پایگاه دانش پایدار برای Agentهای AI است.
+`/careful` قبل از `rm -rf`، `DROP TABLE`، force-push و `git reset --hard` هشدار می‌دهد. `/freeze` محدوده ویرایش را قفل می‌کند و `/guard` هر دو را فعال می‌کند.
 
-راه‌اندازی:
+## ۱۰–۱۵ Sprint موازی
 
-    /setup-gbrain
+[Conductor](https://conductor.build) Sessionهای Claude Code را در Workspaceهای ایزوله موازی اجرا می‌کند. ساختار Think → Plan → Build → Review → Test → Ship باعث می‌شود هر Agent بداند چه کاری انجام دهد و چه زمانی متوقف شود. نویسنده می‌گوید ۱۰–۱۵ Sprint موازی سقف عملی فعلی اوست.
 
-مسیرهای اصلی:
-- Supabase با URL موجود
-- Provision خودکار Supabase
-- PGLite محلی
-- Remote gbrain MCP
+### Voice
 
-ثبت به‌عنوان MCP Server برای Claude Code:
-
-    claude mcp add gbrain -- gbrain serve
-
-همگام‌سازی:
-
-    /sync-gbrain
-
-هر Repo می‌تواند یکی از این سطوح اعتماد را داشته باشد:
-- `read-write`
-- `read-only`
-- `deny`
-
-## حریم خصوصی و Telemetry
-
-Telemetry در gstack **اختیاری و به‌صورت پیش‌فرض خاموش** است.
-
-در صورت فعال‌سازی، اطلاعاتی مانند نام Skill، مدت اجرا، نتیجه، نسخه gstack و OS ارسال می‌شود. کد، مسیر فایل، نام Repo، Branch، Prompt و محتوای کاربر ارسال نمی‌شوند.
-
-خاموش‌کردن Telemetry:
-
-    gstack-config set telemetry off
-
-gstack برای ارسال‌های خارج از ماشین Receipt ایجاد می‌کند و ابزار `gstack-egress` امکان Audit این ارسال‌ها را فراهم می‌کند.
+عبارت‌هایی مثل "run a security check"، "test the website" و "do an engineering review" می‌توانند Skill مناسب را فعال کنند.
 
 ## حذف نصب
 
-روش اصلی:
+### روش ۱
 
-    ~/.claude/skills/gstack/bin/gstack-uninstall
+```bash
+~/.claude/skills/gstack/bin/gstack-uninstall
+```
 
-برای حذف دستی نیز می‌توان gstack و وضعیت محلی آن را حذف کرد:
+گزینه‌های `--keep-state` و `--force` به‌ترتیب برای حفظ State و رد Confirmation هستند.
 
-    rm -rf ~/.claude/skills/gstack
-    rm -rf ~/.gstack
+### روش ۲ — حذف دستی
 
-پس از حذف دستی، Hookهای gstack را نیز از `~/.claude/settings.json` حذف کنید.
+```bash
+pkill -f "gstack.*browse" 2>/dev/null || true
+rm -rf ~/.claude/skills/gstack
+rm -rf ~/.gstack
+rm -rf ${CODEX_HOME:-$HOME/.codex}/skills/gstack* 2>/dev/null
+rm -rf ~/.factory/skills/gstack* 2>/dev/null
+rm -rf ~/.kiro/skills/gstack* 2>/dev/null
+rm -rf ~/.openclaw/skills/gstack* 2>/dev/null
+rm -rf ~/.cursor/skills/gstack* 2>/dev/null
+rm -rf ~/.config/opencode/skills/gstack* 2>/dev/null
+rm -f /tmp/gstack-* 2>/dev/null
+rm -rf .gstack .gstack-worktrees .claude/skills/gstack 2>/dev/null
+rm -rf .agents/skills/gstack* .factory/skills/gstack* 2>/dev/null
+```
 
-در پروژه‌هایی که gstack به CLAUDE.md اضافه شده است، بخش‌های مربوط به gstack و Skill routing را نیز حذف کنید.
+حذف دستی Hookهای gstack را در `~/.claude/settings.json` باقی می‌گذارد؛ Hookهایی را که به `.claude/skills/gstack/` اشاره می‌کنند، از جمله SessionStart auto-update، AskUserQuestion PreToolUse/PostToolUse و Stop Hookها حذف کنید.
 
-## رفع مشکلات
+### CLAUDE.md
 
-**Skill نمایش داده نمی‌شود؟**
+Uninstall Script آن را تغییر نمی‌دهد. در پروژه‌هایی که gstack اضافه شده، بخش‌های `## gstack` و `## Skill routing` را حذف کنید.
 
-    cd ~/.claude/skills/gstack && ./setup
+### Playwright
 
-**Browser جایگزین لازم است؟**
+`~/Library/Caches/ms-playwright/` در macOS باقی می‌ماند چون ابزارهای دیگر ممکن است از آن استفاده کنند.
 
-    GSTACK_SKIP_ASIDE=1
+### Aside
 
-**Browser داخلی مشکل دارد؟**
-
-    cd ~/.claude/skills/gstack && bun install && bun run build
-
-**نصب قدیمی است؟**
-
-    /gstack-upgrade
-
-**فرمان کوتاه می‌خواهید؟**
-
-    cd ~/.claude/skills/gstack && ./setup --no-prefix
-
-**فرمان Namespaceدار می‌خواهید؟**
-
-    cd ~/.claude/skills/gstack && ./setup --prefix
-
-## مستندات
-
-| سند | موضوع |
-|---|---|
-| [Skill Deep Dives](docs/skills.md) | فلسفه و Workflow همه Skillها |
-| [Diagrams & Document Formats](docs/howto-diagrams-and-formats.md) | Mermaid، Excalidraw و قالب اسناد |
-| [Builder Ethos](ETHOS.md) | فلسفه Builder |
-| [Using GBrain with GStack](USING_GBRAIN_WITH_GSTACK.md) | راهنمای GBrain |
-| [GBrain Sync](docs/gbrain-sync.md) | همگام‌سازی حافظه |
-| [Architecture](ARCHITECTURE.md) | معماری و جزئیات داخلی |
-| [Browser](BROWSER.md) | معماری Browser |
-| [Contributing](CONTRIBUTING.md) | توسعه و مشارکت |
-| [CHANGELOG](CHANGELOG.md) | تغییرات نسخه‌ها |
-
-## مجوز
-
-MIT — رایگان و متن‌باز.
+gstack هرگز Aside را نصب نکرده و بنابراین آن را Uninstall نمی‌کند.
 
 ---
 
-این فایل نسخه فارسی و ویراستاری‌شده README پروژه [garrytan/gstack](https://github.com/garrytan/gstack) است. نام فرمان‌ها، مسیرها، کدها، متغیرهای محیطی و شناسه‌های فنی عمداً ترجمه نشده‌اند تا قابل استفاده و اجرا باقی بمانند.
+رایگان، متن‌باز و دارای مجوز MIT. بدون Premium Tier و بدون Waitlist.
+
+**منبع اصلی:** [garrytan/gstack](https://github.com/garrytan/gstack)
