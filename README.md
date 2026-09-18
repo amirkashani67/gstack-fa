@@ -1,4 +1,31 @@
-# gstack
+# gstack — راهنمای فارسی
+
+> این نسخه برای فارسی‌زبان‌هاست: توضیح‌ها فارسی و مفهومی شده‌اند، اما فرمان‌ها، مسیرها، نام فایل‌ها، APIها، متغیرهای محیطی و قطعه‌کدها باید دقیقاً مطابق پروژه اصلی باقی بمانند.
+
+> **منبع فنی:** README رسمی [garrytan/gstack](https://github.com/garrytan/gstack). در صورت اختلاف، نسخه اصلی و فایل‌های خود پروژه مرجع نهایی هستند.
+
+## gstack در یک نگاه
+
+اگر خیلی ساده بگوییم، gstack یک دستیار کدنویسی معمولی نیست؛ یک **روش کار تیمی برای Agent کدنویسی** است. به‌جای اینکه فقط بگویید «این قابلیت را بساز»، کار را بین نقش‌های مختلف تقسیم می‌کند: محصول، معماری، طراحی، Code Review، QA، امنیت و Release.
+
+الگوی اصلی:
+
+`Think → Plan → Build → Review → Test → Ship → Reflect`
+
+مسیر پیشنهادی برای شروع:
+
+`/office-hours` → `/plan-ceo-review` → `/plan-eng-review` → پیاده‌سازی → `/review` → `/qa` → `/ship`
+
+- `/office-hours` مسئله واقعی را قبل از کدنویسی روشن می‌کند.
+- `/plan-ceo-review` محصول و Scope را به چالش می‌کشد.
+- `/plan-eng-review` معماری، جریان داده، خطاها و تست‌ها را بررسی می‌کند.
+- `/review` به‌دنبال Bugهای Production است.
+- `/qa` برنامه را در Browser واقعی تست می‌کند.
+- `/ship` مراحل نهایی انتشار را انجام می‌دهد.
+
+**نکته:** نام Commandها را ترجمه نکنید؛ همان نام انگلیسی را اجرا کنید.
+
+
 
 > ترجمه فارسی README پروژه gstack، بر پایه نسخه اصلی پروژه در [garrytan/gstack](https://github.com/garrytan/gstack). نام فرمان‌ها، کدها، مسیرها، متغیرهای محیطی و شناسه‌های فنی عمداً ترجمه نشده‌اند.
 
@@ -359,3 +386,82 @@ gstack هرگز Aside را نصب نکرده و بنابراین آن را Unins
 رایگان، متن‌باز و دارای مجوز MIT. بدون Premium Tier و بدون Waitlist.
 
 **منبع اصلی:** [garrytan/gstack](https://github.com/garrytan/gstack)
+
+
+## GBrain — حافظه پایدار برای Agent
+
+[GBrain](https://github.com/garrytan/gbrain) یک Knowledge Base پایدار برای Agentهای هوش مصنوعی است؛ یعنی اطلاعاتی که Agent از پروژه یاد می‌گیرد می‌تواند بین Sessionها باقی بماند.
+
+راه‌اندازی:
+
+`/setup-gbrain`
+
+چهار مسیر اصلی دارد: Supabase با URL موجود، Supabase با Provision خودکار، PGLite محلی و Remote gbrain MCP. پس از Init، امکان ثبت GBrain به‌عنوان MCP Server در Claude Code وجود دارد:
+
+`claude mcp add gbrain -- gbrain serve`
+
+برای همگام‌سازی کد:
+
+`/sync-gbrain`
+
+`--full` برای Reindex کامل و `--dry-run` برای پیش‌نمایش است.
+
+سطح Trust هر Repo می‌تواند `read-write`، `read-only` یا `deny` باشد.
+
+برای Sync کردن Memory خود gstack:
+
+`gstack-artifacts-init`
+
+این قابلیت می‌تواند Learnings، Planها، Design Docها، Retroها و Developer Profile را به Git خصوصی منتقل کند و Secret Scanner از AWS Key، Token، PEM و JWT جلوگیری می‌کند.
+
+## حریم خصوصی و Telemetry
+
+Telemetry به‌صورت **پیش‌فرض خاموش** است و فقط با Opt-in فعال می‌شود. در صورت فعال‌سازی، نام Skill، مدت اجرا، نتیجه، نسخه gstack و OS ارسال می‌شود؛ کد، مسیر فایل، نام Repo، Branch، Prompt و محتوای کاربر ارسال نمی‌شود.
+
+خاموش‌کردن:
+
+`gstack-config set telemetry off`
+
+ارسال‌های خارج از دستگاه Receipt زنجیره‌ای در `~/.gstack/security/egress.jsonl` دارند. برای Audit:
+
+`gstack-egress list`
+`gstack-egress verify`
+`gstack-egress grants`
+
+Analytics محلی:
+
+`gstack-analytics`
+
+## Troubleshooting
+
+**Skill دیده نمی‌شود:** `cd ~/.claude/skills/gstack && ./setup`
+
+**`/browse` یا `/qa` پیام `NEEDS_ASIDE` یا `ASIDE_NOT_RUNNING` می‌دهد:** Aside را باز و Login کنید؛ `aside --version` و `aside repl 'console.log("ok")'` را بررسی کنید. برای اجبار به نادیده‌گرفتن Aside از `GSTACK_SKIP_ASIDE=1` استفاده کنید.
+
+**Browser جایگزین مشکل دارد:** `cd ~/.claude/skills/gstack && bun install && bun run build`
+
+**`/make-pdf` یا `/diagram` Render نمی‌شود:** با Aside تست `bun run ~/.claude/skills/gstack/bin/gstack-render.ts some.html --screenshot /tmp/out.png` را اجرا کنید؛ بدون Aside نیز `bun run build` راهکار اصلی است.
+
+**نصب قدیمی است:** `/gstack-upgrade` یا `auto_upgrade: true` در `~/.gstack/config.yaml`
+
+**Command کوتاه می‌خواهید:** `./setup --no-prefix`
+
+**Command Namespaceدار می‌خواهید:** `./setup --prefix`
+
+**Codex خطای invalid SKILL.md می‌دهد:** نصب Codex را با `./setup --host codex` دوباره Generate کنید.
+
+## مستندات مهم
+
+- [Skill Deep Dives](docs/skills.md) — فلسفه و Workflow تمام Skillها
+- [Diagrams & Document Formats](docs/howto-diagrams-and-formats.md) — Mermaid، Excalidraw و PDF
+- [Builder Ethos](ETHOS.md) — اصول Builder
+- [Using GBrain with GStack](USING_GBRAIN_WITH_GSTACK.md) — راهنمای کامل GBrain
+- [GBrain Sync](docs/gbrain-sync.md) — Sync و Privacy
+- [Architecture](ARCHITECTURE.md) — معماری و Internals
+- [Browser](BROWSER.md) — Browser و مرجع `$B`
+- [Contributing](CONTRIBUTING.md) — توسعه و Contributor Mode
+- [CHANGELOG](CHANGELOG.md) — تغییرات نسخه‌ها
+
+## فلسفه این ترجمه
+
+این README قرار است **پروژه را برای کاربر فارسی‌زبان قابل فهم‌تر کند، بدون اینکه رفتار پروژه را تغییر دهد**. بنابراین Code، Command، Path، Environment Variable و شناسه‌های فنی عمداً دست‌نخورده می‌مانند. توضیح فارسی می‌تواند مفهوم را روشن کند، اما نباید دستور اجرایی جدیدی به‌جای دستور اصلی بسازد.
